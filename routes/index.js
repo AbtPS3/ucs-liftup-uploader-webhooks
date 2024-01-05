@@ -62,6 +62,29 @@ const verifyGitHubWebhook = (req, res, next) => {
   const signature = req.get("X-Hub-Signature-256");
   const payload = JSON.stringify(req.body);
 
+  const message = req.body.message || "No message";
+  const runBash = spawn("/bin/bash", ["deploy.sh", message], {
+    cwd: "../ucs-liftup-uploader-frontend",
+    shell: true,
+  });
+
+  let stdoutData = "";
+  let stderrData = "";
+
+  runBash.stdout.on("data", (data) => {
+    stdoutData += data;
+  });
+
+  runBash.stderr.on("data", (data) => {
+    stderrData += data;
+  });
+
+  runBash.on("close", (code) => {
+    console.log(`Child process exited with code ${code}`);
+    console.log("stdout:", stdoutData);
+    console.error("stderr:", stderrData);
+  });
+
   if (!githubSecret || !signature) {
     return res.status(403).json({ success: false, message: "Invalid secret or signature." });
   }
