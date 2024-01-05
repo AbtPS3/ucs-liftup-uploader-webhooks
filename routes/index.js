@@ -15,44 +15,10 @@ router.get("/", function (req, res, next) {
 // Route for loging text to file!
 router.post("/", function (req, res, next) {
   const message = req.body.message || "No message";
-  const runBash = spawn("/bin/bash", ["deploy.sh", message], {
-    cwd: "../ucs-liftup-uploader-frontend",
-    shell: true,
-  });
-
-  let stdoutData = "";
-  let stderrData = "";
-
-  runBash.stdout.on("data", (data) => {
-    stdoutData += data;
-  });
-
-  runBash.stderr.on("data", (data) => {
-    stderrData += data;
-  });
-
-  runBash.on("close", (code) => {
-    console.log(`Child process exited with code ${code}`);
-    console.log("stdout:", stdoutData);
-    console.error("stderr:", stderrData);
-
-    res.status(201).json({
-      success: true,
-      request: req.path,
-      payload: {
-        stdout: stdoutData,
-        stderr: stderrData,
-      },
-    });
-  });
-
-  runBash.on("error", (err) => {
-    console.error("Error spawning child process:", err);
-    res.status(500).json({
-      success: false,
-      request: req.path,
-      error: err.message,
-    });
+  res.status(201).json({
+    success: true,
+    request: req.path,
+    message: message,
   });
 });
 
@@ -61,29 +27,6 @@ const verifyGitHubWebhook = (req, res, next) => {
   const githubSecret = process.env.GITHUB_SECRET;
   const signature = req.get("X-Hub-Signature-256");
   const payload = JSON.stringify(req.body);
-
-  const message = req.body.message || "No message";
-  const runBash = spawn("/bin/bash", ["deploy.sh", message], {
-    cwd: "../ucs-liftup-uploader-frontend",
-    shell: true,
-  });
-
-  let stdoutData = "";
-  let stderrData = "";
-
-  runBash.stdout.on("data", (data) => {
-    stdoutData += data;
-  });
-
-  runBash.stderr.on("data", (data) => {
-    stderrData += data;
-  });
-
-  runBash.on("close", (code) => {
-    console.log(`Child process exited with code ${code}`);
-    console.log("stdout:", stdoutData);
-    console.error("stderr:", stderrData);
-  });
 
   if (!githubSecret || !signature) {
     return res.status(403).json({ success: false, message: "Invalid secret or signature." });
@@ -95,7 +38,7 @@ const verifyGitHubWebhook = (req, res, next) => {
   if (crypto.timingSafeEqual(Buffer.from(calculatedSignature), Buffer.from(signature))) {
     next(); // Signature is valid
   } else {
-    res.status(403).json({ success: false, message: "Invalid signature." });
+    res.status(403).json({ success: false, request: req.path, message: "Invalid signature." });
   }
 };
 
@@ -105,10 +48,30 @@ router.post("/github-push", verifyGitHubWebhook, (req, res) => {
   const payload = req.body;
 
   if (event === "push") {
-    console.log("GitHub Push Event Payload:", payload);
-    res.status(200).json({ success: true, message: "Payload logged successfully." });
+    const runBash = spawn("/bin/bash", ["deploy.sh"], {
+      cwd: "../ucs-liftup-uploader-frontend",
+      shell: true,
+    });
+
+    let stdoutData = "";
+    let stderrData = "";
+
+    runBash.stdout.on("data", (data) => {
+      stdoutData += data;
+    });
+
+    runBash.stderr.on("data", (data) => {
+      stderrData += data;
+    });
+
+    runBash.on("close", (code) => {
+      console.log(`Child process run and exited with code ${code}`);
+      console.log("stdout:", stdoutData);
+      console.error("stderr:", stderrData);
+    });
+    res.status(200).json({ success: true, route: req.path, message: "Script run successfully." });
   } else {
-    res.status(200).json({ success: true, message: "Ignoring non-push event." });
+    res.status(200).json({ success: true, route: req.path, message: "Ignoring non-push event." });
   }
 });
 
