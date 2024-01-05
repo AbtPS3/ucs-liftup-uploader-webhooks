@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { spawn } = require("child_process");
 const crypto = require("crypto");
+const dotenv = require("dotenv");
+dotenv.config();
 
 /* GET root page. */
 router.get("/", function (req, res, next) {
@@ -21,9 +23,10 @@ router.post("/", function (req, res) {
     message: message,
   });
 });
+const GITHUB_SECRET = process.env.GITHUB_SECRET;
 const verify_signature = (req) => {
   const signature = crypto
-    .createHmac("sha256", WEBHOOK_SECRET)
+    .createHmac("sha256", GITHUB_SECRET)
     .update(JSON.stringify(req.body))
     .digest("hex");
   let trusted = Buffer.from(`sha256=${signature}`, "ascii");
