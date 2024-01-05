@@ -21,24 +21,36 @@ router.post("/", function (req, res) {
     message: message,
   });
 });
-const verify_signature = (req) => {
-  const signature = crypto
-    .createHmac("sha256", WEBHOOK_SECRET)
-    .update(JSON.stringify(req.body))
-    .digest("hex");
-  let trusted = Buffer.from(`sha256=${signature}`, "ascii");
-  let untrusted = Buffer.from(req.headers.get("x-hub-signature-256"), "ascii");
-  return crypto.timingSafeEqual(trusted, untrusted);
+
+// Middleware to verify GitHub webhook secret
+const verifyGitHubWebhook = (req, res, next) => {
+  const githubSecret = process.env.GITHUB_SECRET;
+  const signature = req.get("X-Hub-Signature-256");
+  const payload = JSON.stringify(req.body);
+
+  if (!githubSecret || !signature) {
+    return res.status(403).json({ success: false, message: "Invalid secret or signature." });
+  }
+
+  const hmac = crypto.createHmac("sha256", githubSecret);
+  const calculatedSignature = "sha256=" + hmac.update(payload).digest("hex");
+  console.log("Received Signature:", signature);
+  console.log("Calculated Signature:", calculatedSignature);
+
+  if (crypto.timingSafeEqual(Buffer.from(calculatedSignature), Buffer.from(signature))) {
+    next(); // Signature is valid
+  } else {
+    res.status(403).json({ success: false, request: req.path, message: "Invalid signature." });
+  }
 };
 
 // Route to handle GitHub webhook push event
-router.post("/github-push", (req, res) => {
-  if (!verify_signature(req)) {
-    res.status(401).send("Unauthorized");
-    return;
-  }
-  // The rest of your logic here
+router.post("/github-push", verifyGitHubWebhook, (req, res) => {
   const event = req.get("X-GitHub-Event");
+  const payload = req.body;
+
+  console.log("GitHub Payload:", payload);
+
   if (event === "push") {
     const runBash = spawn("/bin/bash", ["deploy.sh"], {
       cwd: "../ucs-liftup-uploader-frontend",
