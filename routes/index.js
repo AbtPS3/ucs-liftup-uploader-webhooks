@@ -13,7 +13,7 @@ router.get("/", function (req, res, next) {
 });
 
 // Route for logging text to file!
-router.post("/", function (req, res, next) {
+router.post("/", function (req, res) {
   const message = req.body.message || "No message";
   res.status(201).json({
     success: true,
@@ -34,6 +34,8 @@ const verifyGitHubWebhook = (req, res, next) => {
 
   const hmac = crypto.createHmac("sha256", githubSecret);
   const calculatedSignature = "sha256=" + hmac.update(payload).digest("hex");
+  console.log("Received Signature:", signature);
+  console.log("Calculated Signature:", calculatedSignature);
 
   if (crypto.timingSafeEqual(Buffer.from(calculatedSignature), Buffer.from(signature))) {
     next(); // Signature is valid
