@@ -25,13 +25,29 @@ router.post("/", function (req, res) {
 });
 const GITHUB_SECRET = process.env.GITHUB_SECRET;
 const verify_signature = (req) => {
-  const signature = crypto
+  const signatureHeader = req.get("X-Hub-Signature-256");
+  if (!signatureHeader) {
+    console.error("Signature header is missing");
+    return false; // Signature header is missing
+  }
+
+  const [algorithm, signature] = signatureHeader.split("=");
+  if (algorithm !== "sha256") {
+    console.error("Unsupported algorithm");
+    return false; // Unsupported algorithm
+  }
+
+  const expectedSignature = crypto
     .createHmac("sha256", GITHUB_SECRET)
     .update(JSON.stringify(req.body))
     .digest("hex");
-  let trusted = Buffer.from(`sha256=${signature}`, "ascii");
-  let untrusted = Buffer.from(req.headers["x-hub-signature-256"], "ascii");
-  return crypto.timingSafeEqual(trusted, untrusted);
+
+  console.log("Expected Signature", expectedSignature);
+
+  return crypto.timingSafeEqual(
+    Buffer.from(signature, "hex"),
+    Buffer.from(expectedSignature, "hex")
+  );
 };
 
 // Route to handle GitHub webhook push event
