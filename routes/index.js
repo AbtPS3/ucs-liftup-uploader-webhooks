@@ -12,7 +12,7 @@ router.get("/", function (req, res, next) {
   });
 });
 
-// Route for loging text to file!
+// Route for logging text to file!
 router.post("/", function (req, res, next) {
   const message = req.body.message || "No message";
   res.status(201).json({
@@ -47,6 +47,8 @@ router.post("/github-push", verifyGitHubWebhook, (req, res) => {
   const event = req.get("X-GitHub-Event");
   const payload = req.body;
 
+  console.log("GitHub Payload:", payload);
+
   if (event === "push") {
     const runBash = spawn("/bin/bash", ["deploy.sh"], {
       cwd: "../ucs-liftup-uploader-frontend",
@@ -64,12 +66,20 @@ router.post("/github-push", verifyGitHubWebhook, (req, res) => {
       stderrData += data;
     });
 
+    runBash.on("error", (err) => {
+      console.error("Error during spawn:", err);
+      res
+        .status(500)
+        .json({ success: false, route: req.path, message: "Error during script execution." });
+    });
+
     runBash.on("close", (code) => {
       console.log(`Child process run and exited with code ${code}`);
       console.log("stdout:", stdoutData);
       console.error("stderr:", stderrData);
+
+      res.status(200).json({ success: true, route: req.path, message: "Script run successfully." });
     });
-    res.status(200).json({ success: true, route: req.path, message: "Script run successfully." });
   } else {
     res.status(200).json({ success: true, route: req.path, message: "Ignoring non-push event." });
   }
