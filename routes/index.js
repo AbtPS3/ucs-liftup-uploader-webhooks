@@ -187,7 +187,7 @@ router.post("/webhooks/backend", (req, res) => {
 
       res
         .status(200)
-        .json({ success: true, route: req.path, message: "Webhooks script run successfully." });
+        .json({ success: true, route: req.path, message: "Webhooks script run successfully!" });
     });
   } else {
     res.status(200).json({
