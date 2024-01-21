@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# GO into screen session
-screen -r 34875
-
 file_path="git-actions.txt"
 
 # Check if the file exists
@@ -22,6 +19,9 @@ else
     echo "$(date): GitHub initiated update!" >> "$file_path"
 fi
 
+# Stop docker
+docker compose stop
+
 # Make sure you are on main branch
 git branch -M main
 
@@ -33,6 +33,3 @@ npm install --silent
 
 # Build the Vue app
 npm run start:prod
-
-# exit screen
-exit
