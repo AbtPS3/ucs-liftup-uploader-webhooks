@@ -58,7 +58,7 @@ router.post("/api/v1/webhooks/liftup/frontend", (req, res) => {
     return;
   }
   const event = req.get("X-GitHub-Event");
-  if (event === "push") {
+  if (event === "push" && req.body.ref === "refs/heads/main") {
     const runBash = spawn("/bin/bash", ["deploy.sh"], {
       cwd: "../liftup-frontend",
       shell: true,
@@ -103,7 +103,7 @@ router.post("/api/v1/webhooks/liftup/backend", (req, res) => {
     return;
   }
   const event = req.get("X-GitHub-Event");
-  if (event === "push") {
+  if (event === "push" && req.body.ref === "refs/heads/main") {
     const runBash = spawn("/bin/bash", ["deploy.sh"], {
       cwd: "../liftup-backend",
       shell: true,
@@ -148,7 +148,7 @@ router.post("/api/v1/webhooks/webhooks/backend", (req, res) => {
     return;
   }
   const event = req.get("X-GitHub-Event");
-  if (event === "push") {
+  if (event === "push" && req.body.ref === "refs/heads/main") {
     const runBash = spawn("/bin/bash", ["deploy.sh"], {
       cwd: "./",
       shell: true,
