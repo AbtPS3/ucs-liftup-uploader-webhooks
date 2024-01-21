@@ -3,6 +3,8 @@
 # Kill Nodemon First
 pkill -f "nodemon"
 
+sleep 3
+
 # Check if the screen session "webhooks" is already running
 if screen -ls | grep -q "webhooks"; then
     # If it is running, reattach to the existing session, stop nodemon, and then run deploy.sh
