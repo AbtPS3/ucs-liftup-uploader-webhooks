@@ -19,9 +19,6 @@ else
     echo "$(date): GitHub initiated update!" >> "$file_path"
 fi
 
-# Stop docker
-docker compose stop
-
 # Make sure you are on main branch
 git branch -M main
 
