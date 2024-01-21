@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Kill Nodemon First
-kill -9 $(lsof -ti :3011)
+# kill -9 $(lsof -ti :3011)
 
-sleep 3
+sleep 1
 
 # Check if the screen session "webhooks" is already running
 if screen -ls | grep -q "webhooks"; then
