@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# GO into screen session
+screen -r 34875
+
 file_path="git-actions.txt"
 
 # Check if the file exists
@@ -30,3 +33,6 @@ npm install --silent
 
 # Build the Vue app
 npm run start:prod
+
+# exit screen
+exit
