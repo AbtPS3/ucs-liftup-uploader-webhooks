@@ -16,7 +16,7 @@ if [ -n "$1" ]; then
     echo $1
 else
     # If the variable is not present, echo the default message
-    echo "$(date): GitHub initiated update!" >> "$file_path"
+    echo "$(date): This is a GitHub initiated update!" >> "$file_path"
 fi
 
 # Make sure you are on main branch
