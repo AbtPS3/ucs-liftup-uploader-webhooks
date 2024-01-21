@@ -92,7 +92,11 @@ router.post("/api/v1/webhooks/liftup/frontend", (req, res) => {
         .json({ success: true, route: req.path, message: "Frontend script run successfully." });
     });
   } else {
-    res.status(200).json({ success: true, route: req.path, message: "Ignoring non-push event." });
+    res.status(200).json({
+      success: true,
+      route: req.path,
+      message: "Ignoring non-push or non-main branch event.",
+    });
   }
 });
 
@@ -137,7 +141,11 @@ router.post("/api/v1/webhooks/liftup/backend", (req, res) => {
         .json({ success: true, route: req.path, message: "Backend script run successfully." });
     });
   } else {
-    res.status(200).json({ success: true, route: req.path, message: "Ignoring non-push event." });
+    res.status(200).json({
+      success: true,
+      route: req.path,
+      message: "Ignoring non-push or non-main branch event.",
+    });
   }
 });
 
@@ -182,7 +190,11 @@ router.post("/api/v1/webhooks/webhooks/backend", (req, res) => {
         .json({ success: true, route: req.path, message: "Webhooks script run successfully." });
     });
   } else {
-    res.status(200).json({ success: true, route: req.path, message: "Ignoring non-push event." });
+    res.status(200).json({
+      success: true,
+      route: req.path,
+      message: "Ignoring non-push or non-main beanch event.",
+    });
   }
 });
 
