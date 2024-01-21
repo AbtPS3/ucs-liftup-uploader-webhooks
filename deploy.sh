@@ -22,7 +22,10 @@ fi
 # Make sure you are on main branch
 git branch -M main
 
-#Pull the latest version
+# Stop nodemon process
+pkill -f "nodemon"
+
+# Pull the latest version
 git pull
 
 # Update NPM packages
