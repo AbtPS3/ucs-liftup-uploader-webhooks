@@ -52,7 +52,7 @@ router.post("/", function (req, res) {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Frontend
-router.post("/api/v1/webhooks/liftup/frontend", (req, res) => {
+router.post("/liftup/frontend", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
@@ -101,7 +101,7 @@ router.post("/api/v1/webhooks/liftup/frontend", (req, res) => {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Backend
-router.post("/api/v1/webhooks/liftup/backend", (req, res) => {
+router.post("/liftup/backend", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
@@ -150,7 +150,7 @@ router.post("/api/v1/webhooks/liftup/backend", (req, res) => {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Webhooks
-router.post("/api/v1/webhooks/webhooks/backend", (req, res) => {
+router.post("/webhooks/backend", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
