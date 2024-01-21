@@ -8,7 +8,7 @@ sleep 1
 # Check if the screen session "webhooks" is already running
 if screen -ls | grep -q "webhooks"; then
     # If it is running, reattach to the existing session, stop nodemon, and then run deploy.sh
-    screen -S webhooks -X stuff $'\003\n./deploy.sh\n' # Sending Ctrl+C (SIGINT and bash)
+    screen -S webhooks -X stuff $'\003\n./deploy.sh\n' # Sending Ctrl+C (SIGINT and bash command)
     sleep 2
     screen -S webhooks -X stuff './deploy.sh\n'
 else
