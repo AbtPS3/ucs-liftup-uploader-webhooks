@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "start:prod": "npx nodemon"
+    "start": "node index.js",
+    "start:dev": "npx nodemon -L",
+    "start:prod": "pm2 start . --name liftup-webhooks"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
