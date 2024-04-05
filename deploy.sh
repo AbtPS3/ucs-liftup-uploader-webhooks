@@ -22,14 +22,11 @@ fi
 # Make sure you are on main branch
 git branch -M main
 
-# Stop nodemon process
-pkill -f "nodemon"
-
 # Pull the latest version
 git pull
 
 # Update NPM packages
 npm install --silent
 
-# Build the Vue app
-npm run start:prod
+# Run the app using PM2
+pm2 restart liftup-webhooks
