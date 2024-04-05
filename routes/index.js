@@ -37,7 +37,7 @@ router.get("/", function (req, res, next) {
   res.status(200).json({
     success: true,
     request: req.path,
-    payload: "Webhooks root path reached successfully!",
+    payload: "Webhooks root path breached!",
   });
 });
 
