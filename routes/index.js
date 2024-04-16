@@ -150,14 +150,14 @@ router.post("/liftup/frontend/prod", (req, res) => {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Backend
-router.post("/liftup/backend/dev", (req, res) => {
+router.post("/liftup/backend/test", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
   }
   const event = req.get("X-GitHub-Event");
   if (event === "push" && req.body.ref === "refs/heads/main") {
-    const runBash = spawn("/bin/bash", ["deploy-dev.sh"], {
+    const runBash = spawn("/bin/bash", ["deploy-test.sh"], {
       cwd: "../liftup-backend",
       shell: true,
     });
@@ -248,14 +248,14 @@ router.post("/liftup/backend/prod", (req, res) => {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Webhooks
-router.post("/webhooks/backend/dev", (req, res) => {
+router.post("/webhooks/backend/test", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
   }
   const event = req.get("X-GitHub-Event");
   if (event === "push" && req.body.ref === "refs/heads/main") {
-    const runBash = spawn("/bin/bash", ["deploy-dev.sh"], {
+    const runBash = spawn("/bin/bash", ["deploy-test.sh"], {
       cwd: "./",
       shell: true,
     });

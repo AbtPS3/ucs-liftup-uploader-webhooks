@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file_path="git-actions-dev.txt"
+file_path="git-actions-test.txt"
 
 # Check if the file exists
 if [ ! -e "$file_path" ]; then
