@@ -30,3 +30,5 @@ npm install --silent
 
 # Run the app using PM2
 pm2 restart liftup-webhooks
+
+echo "Git initiated update complete!"
