@@ -51,15 +51,64 @@ router.post("/", function (req, res) {
   });
 });
 
-// Route to handle GitHub webhook push event for Lift Up Frontend
-router.post("/liftup/frontend", (req, res) => {
+// Route to handle GitHub webhook push event for Lift Up Frontend dev branch
+router.post("/liftup/frontend/test", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
   }
   const event = req.get("X-GitHub-Event");
   if (event === "push" && req.body.ref === "refs/heads/main") {
-    const runBash = spawn("/bin/bash", ["deploy.sh"], {
+    const runBash = spawn("/bin/bash", ["deploy-test.sh"], {
+      cwd: "../liftup-frontend",
+      shell: true,
+    });
+
+    let stdoutData = "";
+    let stderrData = "";
+
+    runBash.stdout.on("data", (data) => {
+      stdoutData += data;
+    });
+
+    runBash.stderr.on("data", (data) => {
+      stderrData += data;
+    });
+
+    runBash.on("error", (err) => {
+      console.error("Error during spawn:", err);
+      res
+        .status(500)
+        .json({ success: false, route: req.path, message: "Error during script execution." });
+    });
+
+    runBash.on("close", (code) => {
+      console.log(`Child process run and exited with code ${code}`);
+      console.log("stdout:", stdoutData);
+      console.error("stderr:", stderrData);
+
+      res
+        .status(200)
+        .json({ success: true, route: req.path, message: "Frontend script run successfully." });
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      route: req.path,
+      message: "Ignoring non-push or non-main branch event.",
+    });
+  }
+});
+
+// Route to handle GitHub webhook push event for Lift Up Frontend main branch
+router.post("/liftup/frontend/prod", (req, res) => {
+  if (!verify_signature(req)) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const event = req.get("X-GitHub-Event");
+  if (event === "push" && req.body.ref === "refs/heads/main") {
+    const runBash = spawn("/bin/bash", ["deploy-prod.sh"], {
       cwd: "../liftup-frontend",
       shell: true,
     });
@@ -101,14 +150,63 @@ router.post("/liftup/frontend", (req, res) => {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Backend
-router.post("/liftup/backend", (req, res) => {
+router.post("/liftup/backend/dev", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
   }
   const event = req.get("X-GitHub-Event");
   if (event === "push" && req.body.ref === "refs/heads/main") {
-    const runBash = spawn("/bin/bash", ["deploy.sh"], {
+    const runBash = spawn("/bin/bash", ["deploy-dev.sh"], {
+      cwd: "../liftup-backend",
+      shell: true,
+    });
+
+    let stdoutData = "";
+    let stderrData = "";
+
+    runBash.stdout.on("data", (data) => {
+      stdoutData += data;
+    });
+
+    runBash.stderr.on("data", (data) => {
+      stderrData += data;
+    });
+
+    runBash.on("error", (err) => {
+      console.error("Error during spawn:", err);
+      res
+        .status(500)
+        .json({ success: false, route: req.path, message: "Error during script execution." });
+    });
+
+    runBash.on("close", (code) => {
+      console.log(`Child process run and exited with code ${code}`);
+      console.log("stdout:", stdoutData);
+      console.error("stderr:", stderrData);
+
+      res
+        .status(200)
+        .json({ success: true, route: req.path, message: "Backend script run successfully." });
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      route: req.path,
+      message: "Ignoring non-push or non-main branch event.",
+    });
+  }
+});
+
+// Route to handle GitHub webhook push event for Lift Up Backend
+router.post("/liftup/backend/prod", (req, res) => {
+  if (!verify_signature(req)) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const event = req.get("X-GitHub-Event");
+  if (event === "push" && req.body.ref === "refs/heads/main") {
+    const runBash = spawn("/bin/bash", ["deploy-prod.sh"], {
       cwd: "../liftup-backend",
       shell: true,
     });
@@ -150,14 +248,63 @@ router.post("/liftup/backend", (req, res) => {
 });
 
 // Route to handle GitHub webhook push event for Lift Up Webhooks
-router.post("/webhooks/backend", (req, res) => {
+router.post("/webhooks/backend/dev", (req, res) => {
   if (!verify_signature(req)) {
     res.status(401).send("Unauthorized");
     return;
   }
   const event = req.get("X-GitHub-Event");
   if (event === "push" && req.body.ref === "refs/heads/main") {
-    const runBash = spawn("/bin/bash", ["deploy.sh"], {
+    const runBash = spawn("/bin/bash", ["deploy-dev.sh"], {
+      cwd: "./",
+      shell: true,
+    });
+
+    let stdoutData = "";
+    let stderrData = "";
+
+    runBash.stdout.on("data", (data) => {
+      stdoutData += data;
+    });
+
+    runBash.stderr.on("data", (data) => {
+      stderrData += data;
+    });
+
+    runBash.on("error", (err) => {
+      console.error("Error during spawn:", err);
+      res
+        .status(500)
+        .json({ success: false, route: req.path, message: "Error during script execution." });
+    });
+
+    runBash.on("close", (code) => {
+      console.log(`Child process run and exited with code ${code}`);
+      console.log("stdout:", stdoutData);
+      console.error("stderr:", stderrData);
+
+      res
+        .status(200)
+        .json({ success: true, route: req.path, message: "Webhooks script run successfully!" });
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      route: req.path,
+      message: "Ignoring non-push or non-main beanch event.",
+    });
+  }
+});
+
+// Route to handle GitHub webhook push event for Lift Up Webhooks
+router.post("/webhooks/backend/prod", (req, res) => {
+  if (!verify_signature(req)) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const event = req.get("X-GitHub-Event");
+  if (event === "push" && req.body.ref === "refs/heads/main") {
+    const runBash = spawn("/bin/bash", ["deploy-prod.sh"], {
       cwd: "./",
       shell: true,
     });

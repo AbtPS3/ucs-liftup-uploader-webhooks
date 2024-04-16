@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file_path="git-actions.txt"
+file_path="git-actions-dev.txt"
 
 # Check if the file exists
 if [ ! -e "$file_path" ]; then
@@ -20,7 +20,7 @@ else
 fi
 
 # Make sure you are on main branch
-git branch -M main
+git branch -M dev
 
 # Pull the latest version
 git pull
