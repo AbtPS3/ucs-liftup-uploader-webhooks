@@ -23,7 +23,7 @@ fi
 git branch -M main
 
 # Pull the latest version
-git pull
+git fetch && git merge origin/main -m "Auto-merged by webhooks"
 
 # Update NPM packages
 npm install --silent
