@@ -7,4 +7,4 @@ git commit -m "${1:-AUTO commited by script}"
 
 git merge dev -m "Auto-merged with dev"
 
-git push
+git push -u origin main
