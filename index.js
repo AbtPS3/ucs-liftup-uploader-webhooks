@@ -59,9 +59,9 @@ class Server {
     const frontendRouter = new FrontendRouter();
     const webhooksRouter = new WebhooksRouter();
 
-    this.app.use("/api/v1/liftup/backend", backendRouter.getRouter());
-    this.app.use("/api/v1/liftup/frontend", frontendRouter.getRouter());
-    this.app.use("/api/v1/liftup/webhooks", webhooksRouter.getRouter());
+    this.app.use("/api/v1/webhooks/liftup/backend", backendRouter.getRouter());
+    this.app.use("/api/v1/webhooks/liftup/frontend", frontendRouter.getRouter());
+    this.app.use("/api/v1/webhooks/liftup/webhooks", webhooksRouter.getRouter());
   }
 
   /**
