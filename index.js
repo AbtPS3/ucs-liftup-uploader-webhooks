@@ -1,55 +1,80 @@
-const EXPRESS = require("express");
-const dotenv = require("dotenv");
-dotenv.config();
-const LOGGER = require("morgan");
-const CORS = require("cors");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-
-const APP = EXPRESS();
-const PORT = process.env.PORT || 3011;
-
-const indexRouter = require("./routes/index");
-
-// App Configuration Entries
-APP.disable("x-powered-by");
-APP.use(CORS());
-APP.use(EXPRESS.urlencoded({ extended: true }));
-APP.use(LOGGER("dev"));
-APP.use(EXPRESS.json());
-APP.use(cookieParser());
-APP.use(EXPRESS.static(path.join(__dirname, "public")));
-
-APP.use("/api/v1/webhooks", indexRouter);
-
-APP.on("error", onError);
-
-APP.listen(PORT, () => {
-  console.log("Webooks server is up on port: " + PORT);
-});
-
 /**
- * Event listener for HTTP server "error" event.
+ * @file server.js
+ * @version 1.0.0
+ * @name Server
+ * @description This file is the entry point for the Express server application. It sets up middleware, routing, and error handling.
+ * @autor Kizito Mrema
  */
 
-function onError(error) {
-  if (error.syscall !== "listen") {
-    throw error;
+import express from "express";
+import dotenv from "dotenv";
+dotenv.config({ path: `.env.local`, override: true });
+import bodyParser from "body-parser";
+
+import ErrorHelper from "./helpers/error-helper.js";
+import BackendRouter from "./routes/backend-router.js";
+import FrontendRouter from "./routes/frontend-router.js";
+import WebhooksRouter from "./routes/webhooks-router.js";
+
+/**
+ * Class representing the server.
+ */
+class Server {
+  /**
+   * Create a Server instance.
+   */
+  constructor() {
+    this.app = express();
+    this.port = process.env.NODE_PORT || 3011;
+    this.initializeMiddleware();
+    this.initializeErrorHandling();
+    this.initializeRouteHandling();
   }
 
-  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+  /**
+   * Initialize middleware for the Express app.
+   */
+  initializeMiddleware() {
+    this.app.disable("x-powered-by");
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: false }));
+    this.app.use(bodyParser.json());
+  }
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case "EACCES":
-      console.error(bind + " requires elevated privileges");
-      process.exit(1);
-      break;
-    case "EADDRINUSE":
-      console.error(bind + " is already in use");
-      process.exit(1);
-    // break;
-    default:
-      throw error;
+  /**
+   * Initialize error handling for the Express app.
+   */
+  initializeErrorHandling() {
+    const errorHelperInstance = new ErrorHelper();
+    this.app.use((err, req, res, next) => {
+      errorHelperInstance.handleError(err, req, res, next);
+    });
+  }
+
+  /**
+   * Initialize route handling for the Express app.
+   */
+  initializeRouteHandling() {
+    const backendRouter = new BackendRouter();
+    const frontendRouter = new FrontendRouter();
+    const webhooksRouter = new WebhooksRouter();
+
+    this.app.use("/api/v1/liftup/backend", backendRouter.getRouter());
+    this.app.use("/api/v1/liftup/frontend", frontendRouter.getRouter());
+    this.app.use("/api/v1/liftup/webhooks", webhooksRouter.getRouter());
+  }
+
+  /**
+   * Start the Express server.
+   */
+  start() {
+    this.app.listen(this.port, () => {
+      console.log(`INFO: Service ${process.env.SERVICE_NAME?.toUpperCase()} is listening on ${this.port}`);
+    });
   }
 }
+
+export default Server;
+
+const server = new Server();
+server.start();
