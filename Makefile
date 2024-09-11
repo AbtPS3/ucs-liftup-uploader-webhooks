@@ -2,7 +2,7 @@
 
 deployTestBackend:
 	cd ../liftup-backend && \
-	git checkout -b dev && \
+	git checkout -m dev && \
 	git fetch && \
 	git merge origin/dev -m "Automerged by Makefile" && \
 	npm install --silent && \
@@ -10,7 +10,7 @@ deployTestBackend:
 
 deployProdBackend:
 	cd ../liftup-backend && \
-	git checkout -b main && \
+	git checkout -m main && \
 	git fetch && \
 	git merge origin/main -m "Automerged by Makefile" && \
 	npm install --silent && \
@@ -18,7 +18,7 @@ deployProdBackend:
 
 deployTestFrontend:
 	cd ../liftup-frontend && \
-	git checkout -b dev && \
+	git checkout -m dev && \
 	git fetch && \
 	git merge origin/dev -m "Auto-merged by Makefile" && \
 	npm install --silent && \
@@ -26,7 +26,7 @@ deployTestFrontend:
 
 deployProdFrontend:
 	cd ../liftup-frontend && \
-	git checkout -b main && \
+	git checkout -m main && \
 	git fetch && \
 	git merge origin/main -m "Auto-merged by Makefile" && \
 	npm install --silent && \
@@ -34,7 +34,7 @@ deployProdFrontend:
 
 deployTestWebhooks:
 	cd . && \
-	git checkout -b dev && \
+	git checkout -m dev && \
 	git fetch && \
 	git merge origin/dev -m "Auto-merged by Makefile" && \
 	npm install --silent && \
@@ -42,7 +42,7 @@ deployTestWebhooks:
 
 deployProdWebhooks:
 	cd . && \
-	git checkout -b main && \
+	git checkout -m main && \
 	git fetch && \
 	git merge origin/main -m "Auto-merged by Makefile" && \
 	npm install --silent && \
